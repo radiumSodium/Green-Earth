@@ -6,9 +6,58 @@ const categoryContainer = document.getElementById("category");
 const cartItemsContainer = document.getElementById("cart-items");
 
 let cart = {}; // store items as { id: { name, price, qty } }
+const spinner = document.getElementById("spinner");
+const modal = document.getElementById("my_modal_4");
+const modalContent = document.getElementById("modal-content");
+
+function showSpinner(){
+    spinner.classList.remove("hidden");
+    cardContainer.classList.add("hidden");
+}
+
+
+function hideSpinner(){
+    spinner.classList.add("hidden");
+    cardContainer.classList.remove("hidden");
+}
+
+function showPlantModal(id) {
+  // show modal immediately with a tiny skeleton/loader
+  modalContent.innerHTML = `
+
+  `;
+  modal.showModal();
+
+  fetch(`https://openapi.programming-hero.com/api/plant/${id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      const plant = data?.plants;
+      if (!plant) {
+        modalContent.innerHTML = `
+          <div class="text-red-600">Could not load plant details.</div>
+        `;
+        return;
+      }
+
+      const imgSrc = plant.image;
+
+      modalContent.innerHTML = `
+        <h2 class="text-2xl font-bold py-4">${plant.name}</h2>
+        <figure>
+          <img src="${imgSrc}" alt="${plant.name}"
+               class="w-full h-80 object-cover rounded-xl mb-4"/>
+        </figure>
+        <p class="mb-4 text-gray-700"><span class="font-bold">Category:</span> ${plant.category}</p>
+        <p class=" mb-2"><span class="font-bold">Price:</span> $${plant.price}</p>
+        <p class="mb-4 text-gray-700"><span class="font-bold">Description:</span> ${plant.description}</p>
+      `;
+    })
+  
+}
 
 // Render plants
 function renderPlants(plants) {
+
   cardContainer.innerHTML = "";
   plants.forEach((plant) => {
     let card = document.createElement("div");
@@ -20,7 +69,7 @@ function renderPlants(plants) {
         </figure>
         <div class="items-center text-left flex-1">
           <div class="my-4">
-            <h2 class="font-semibold text-lg mb-4">${plant.name}</h2>
+            <h2 class="font-semibold text-lg mb-4" cursor-pointer" id="card-title" data-id="${plant.id}">${plant.name}</h2>
             <p class="text-[#1F2937]">${plant.description}</p>
           </div>
           <div class="flex justify-between mb-4">
@@ -35,12 +84,18 @@ function renderPlants(plants) {
     `;
 
     // Add event listener for cart
+    card.querySelector("#card-title").addEventListener("click", () => {
+      showPlantModal(plant.id);
+    });
+
     card.querySelector(".add-to-cart").addEventListener("click", () => {
       addToCart(plant);
     });
 
     cardContainer.appendChild(card);
   });
+hideSpinner();
+
 }
 
 // Add to Cart
@@ -82,7 +137,7 @@ function renderCart() {
           <h4>${item.name}</h4>
           <p>$${item.price} x ${item.qty}</p>
         </div>
-        <button class="text-red-600 font-bold">x</button>
+        <button class=" px-2 text-2xl">x</button>
       `;
 
       // remove button event
@@ -102,12 +157,14 @@ function renderCart() {
 
 // Load Plants
 function loadAllPlants() {
+    showSpinner();
   fetch(all_plant_api)
     .then((res) => res.json())
     .then((data) => renderPlants(data.plants));
 }
 
 function loadPlantsByCategory(id) {
+    showSpinner();
   fetch(`https://openapi.programming-hero.com/api/category/${id}`)
     .then((res) => res.json())
     .then((data) => renderPlants(data.plants));
