@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body>
-    <div class="navbar bg-[#15803D] shadow-sm text-white md:px-24">
+    <div class="navbar bg-[#15803D] shadow-sm text-white md:px-40">
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -59,24 +59,19 @@
     </div>
 
     <div
-      class="relative bg-[#CFF0DC] w-full min-h-[300px] flex items-center justify-center overflow-hidden px-6 py-12 md:py-18"
+      class="relative bg-[#CFF0DC] w-full min-h-[300px] flex flex-col items-center justify-center overflow-hidden px-6 pt-10 lg:py-18"
     >
-      <img
+      <!-- <img
         src="assets/hero-leaf1.png"
-        alt="Leaf Left"
-        class="absolute left-0 top-0"
-      />
-      <img
-        src="assets/hero-leaf2.png"
-        alt="Leaf Right"
-        class="absolute right-0 top-0 hidden md:flex"
-      />
+        alt="Leaf Top"
+        class=" mb-4 block md:hidden"
+      /> -->
 
       <!-- Hero Content -->
       <div
         class="hero-content flex flex-col text-center max-w-2xl space-y-4 relative z-10"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">
+        <h1 class="text-4xl md:text-5xl font-bold">
           Plant a Tree, Grow a Future
         </h1>
         <p class="text-[#1F2937] text-base md:text-lg">
@@ -87,17 +82,36 @@
           <button
             class="bg-[#FACC15] text-[#15803D] font-semibold rounded-3xl px-6 py-2 hover:bg-yellow-400 transition"
           >
-            Plant a Tree
+            Get Involved
           </button>
         </div>
       </div>
+
+      <img
+        src="assets/hero-leaf2.png"
+        alt="Leaf Bottom"
+        class="w-[400px] mt-4 block md:hidden"
+      />
+
+
+      <img
+        src="assets/hero-leaf1.png"
+        alt="Leaf Left"
+        class="absolute left-0 top-0 hidden md:block"
+      />
+      <img
+        src="assets/hero-leaf2.png"
+        alt="Leaf Right"
+        class="absolute right-0 top-0 hidden md:block"
+      />
     </div>
 
+
     <!-- choose your trees  -->
-    <section class="bg-[#F0FDF4] w-full py-16">
+    <section class="bg-[#F0FDF4] w-full py-24">
       <h2 class="text-center font-semibold text-3xl">Choose Your Trees</h2>
 
-      <div class="container py-8 mx-auto flex flex-col lg:flex-row gap-6">
+      <div class="container py-10 mx-auto flex flex-col lg:flex-row gap-6">
         <!-- Categories -->
         <div class="category text-center lg:text-left w-full lg:w-48 shrink-0">
           <h4 class="font-semibold text-lg pb-4">Categories</h4>
@@ -134,13 +148,13 @@
             class="card-section flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             id="card-container"
           >
-            <!-- Cards will be injected here -->
+            <!-- Cards will be go here -->
           </div>
         </div>
 
         <!-- Cart Section -->
         <div
-          class="cart-section w-full lg:w-72 shrink-0 bg-white rounded-3xl p-4"
+          class="cart-section w-[450px] mx-auto md:w-full lg:w-72 shrink-0 bg-white rounded-3xl p-4"
         >
           <h4 class="text-2xl font-semibold mb-2">Your Cart</h4>
           <div class="cart-items" id="cart-items">
@@ -157,27 +171,23 @@
 
     <!-- About the Campaign  -->
 
-    <section class="bg-green-50 py-16 px-4">
+    <section class="bg-green-50 pb-24 px-4">
       <div class="max-w-6xl mx-auto">
-        <!-- Title -->
         <h2
           class="text-2xl md:text-3xl font-bold text-center mb-12 text-gray-800"
         >
           About the Campaign
         </h2>
 
-        <!-- Flex Layout -->
-        <div class="flex flex-col md:flex-row items-center gap-8">
-          <!-- Image -->
+        <div class="flex flex-col md:flex-row items-center gap-8 p-6">
           <div class="w-full md:w-1/2">
             <img
               src="assets/about.png"
               alt="Plant"
-              class="rounded-xl shadow-md w-full object-cover"
+              class="rounded-xl shadow-md w-full object-cover "
             />
           </div>
 
-          <!-- Text -->
           <div class="w-full md:w-1/2 text-[#1F2937]">
             <p class="mb-6">
               Green Earth is a global tree plantation initiative dedicated to
@@ -186,7 +196,6 @@
               forests, create habitats for wildlife, and combat global warming.
             </p>
 
-            <!-- Bullet Points -->
             <ul class="list-disc pl-6 space-y-2">
               <li>Restoration of natural habitats</li>
               <li>Improvement of air quality</li>
@@ -200,7 +209,7 @@
     <!-- Our Impact  -->
 
     <section class="our-impact w-full bg-[#CFF0DC]">
-      <div class="py-16 px-8 max-w-6xl mx-auto">
+      <div class="py-24 px-8 max-w-6xl mx-auto">
         <h3 class="text-center font-semibold text-3xl pb-10">Our Impact</h3>
 
         <div
