@@ -1,31 +1,31 @@
+// API 
+const CATEGORY_API = "https://openapi.programming-hero.com/api/categories";
+const PLANTS_API = "https://openapi.programming-hero.com/api/plants";
 
-const category_api = "https://openapi.programming-hero.com/api/categories";
-const all_plant_api = "https://openapi.programming-hero.com/api/plants";
+// DOM Elements
 const cardContainer = document.getElementById("card-container");
-const categoryContainer = document.getElementById("category");
-const cartItemsContainer = document.getElementById("cart-items");
-
-let cart = {}; // store items as { id: { name, price, qty } }
+const categoryList = document.getElementById("category");
+const cartContainer = document.getElementById("cart-items");
 const spinner = document.getElementById("spinner");
 const modal = document.getElementById("my_modal_4");
-const modalContent = document.getElementById("modal-content");
+const modalBody = document.getElementById("modal-content");
 
-function showSpinner(){
-    spinner.classList.remove("hidden");
-    cardContainer.classList.add("hidden");
+// Cart object to track items
+let cart = {};
+
+// Spinner
+function showSpinner() {
+  spinner.classList.remove("hidden");
+  cardContainer.classList.add("hidden");
 }
 
-
-function hideSpinner(){
-    spinner.classList.add("hidden");
-    cardContainer.classList.remove("hidden");
+function hideSpinner() {
+  spinner.classList.add("hidden");
+  cardContainer.classList.remove("hidden");
 }
 
+// Show Plant Details Modal
 function showPlantModal(id) {
-  // show modal immediately with a tiny skeleton/loader
-  modalContent.innerHTML = `
-
-  `;
   modal.showModal();
 
   fetch(`https://openapi.programming-hero.com/api/plant/${id}`)
@@ -33,72 +33,66 @@ function showPlantModal(id) {
     .then((data) => {
       const plant = data?.plants;
       if (!plant) {
-        modalContent.innerHTML = `
-          <div class="text-red-600">Could not load plant details.</div>
-        `;
+        modalBody.innerHTML = `<div class="text-red-500">Unable to load plant details.</div>`;
         return;
       }
 
-      const imgSrc = plant.image;
-
-      modalContent.innerHTML = `
-        <h2 class="text-2xl font-bold py-4">${plant.name}</h2>
+      modalBody.innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">${plant.name}</h2>
         <figure>
-          <img src="${imgSrc}" alt="${plant.name}"
+          <img src="${plant.image}" alt="${plant.name}"
                class="w-full h-80 object-cover rounded-xl mb-4"/>
         </figure>
-        <p class="mb-4 text-gray-700"><span class="font-bold">Category:</span> ${plant.category}</p>
-        <p class=" mb-2"><span class="font-bold">Price:</span> $${plant.price}</p>
-        <p class="mb-4 text-gray-700"><span class="font-bold">Description:</span> ${plant.description}</p>
+        <p class="mb-2"><strong>Category:</strong> ${plant.category}</p>
+        <p class="mb-2"><strong>Price:</strong> $${plant.price}</p>
+        <p class="text-gray-700"><strong>Description:</strong> ${plant.description}</p>
       `;
-    })
-  
+    });
 }
 
-// Render plants
+// Render Plants as Cards
 function renderPlants(plants) {
-
   cardContainer.innerHTML = "";
+
   plants.forEach((plant) => {
-    let card = document.createElement("div");
+    const card = document.createElement("div");
     card.innerHTML = `
       <div class="card bg-base-100 w-80 h-full shadow-sm rounded-2xl px-4 py-4 flex flex-col justify-between">
         <figure>
           <img src="${plant.image}" alt="${plant.name}"
                class="rounded-xl h-40 w-full object-cover"/>
         </figure>
-        <div class="items-center text-left flex-1">
-          <div class="my-4">
-            <h2 class="font-semibold text-lg mb-4" cursor-pointer" id="card-title" data-id="${plant.id}">${plant.name}</h2>
-            <p class="text-[#1F2937]">${plant.description}</p>
-          </div>
-          <div class="flex justify-between mb-4">
-            <div class="level-tag text-[#15803D] bg-[#DCFCE7] rounded-3xl px-4 py-2">
-              ${plant.category}
-            </div>
-            <p class="font-semibold">$${plant.price}</p>
-          </div>
+        <div class="flex-1 text-left my-4">
+          <h2 class="font-semibold text-lg mb-2 cursor-pointer" data-id="${plant.id}">${plant.name}</h2>
+          <p class="text-[#1F2937]">${plant.description}</p>
         </div>
-        <button class="btn text-white bg-[#15803D] rounded-3xl add-to-cart">Add to Cart</button>
+        <div class="flex justify-between items-center mb-4">
+          <span class="px-4 py-2 rounded-3xl bg-[#DCFCE7] text-[#15803D]">
+            ${plant.category}
+          </span>
+          <p class="font-semibold">$${plant.price}</p>
+        </div>
+        <button class="btn bg-[#15803D] text-white rounded-3xl add-to-cart">Add to Cart</button>
       </div>
     `;
 
-    // Add event listener for cart
-    card.querySelector("#card-title").addEventListener("click", () => {
-      showPlantModal(plant.id);
-    });
+    // Open modal on title click
+    card
+      .querySelector("h2")
+      .addEventListener("click", () => showPlantModal(plant.id));
 
-    card.querySelector(".add-to-cart").addEventListener("click", () => {
-      addToCart(plant);
-    });
+    // Add to cart button
+    card
+      .querySelector(".add-to-cart")
+      .addEventListener("click", () => addToCart(plant));
 
     cardContainer.appendChild(card);
   });
-hideSpinner();
 
+  hideSpinner();
 }
 
-// Add to Cart
+// Add Plant to Cart
 function addToCart(plant) {
   if (cart[plant.id]) {
     cart[plant.id].qty += 1;
@@ -108,103 +102,100 @@ function addToCart(plant) {
   renderCart();
 }
 
-// Remove item from cart
+// Remove Plant from Cart
 function removeFromCart(id) {
   delete cart[id];
   renderCart();
 }
 
-// Render Cart
+// Render Cart Items
 function renderCart() {
-  cartItemsContainer.innerHTML = "";
-
+  cartContainer.innerHTML = "";
   let total = 0;
-  let keys = Object.keys(cart);
 
-  if (keys.length === 0) {
-    cartItemsContainer.innerHTML = `<p class="text-gray-500 text-center py-4">Your cart is empty</p>`;
+  const ids = Object.keys(cart);
+  if (ids.length === 0) {
+    cartContainer.innerHTML = `<p class="text-gray-500 text-center py-4">Your cart is empty</p>`;
   } else {
-    keys.forEach((id) => {
-      let item = cart[id];
+    ids.forEach((id) => {
+      const item = cart[id];
       total += item.price * item.qty;
 
-      let div = document.createElement("div");
+      const div = document.createElement("div");
       div.className =
         "bg-[#F0FDF4] p-2 flex justify-between rounded-xl my-2 items-center";
 
       div.innerHTML = `
-        <div class="flex-1">
+        <div>
           <h4>${item.name}</h4>
-          <p>$${item.price} x ${item.qty}</p>
+          <p>$${item.price} × ${item.qty}</p>
         </div>
-        <button class=" px-2 text-2xl">x</button>
+        <button class="px-2 text-xl">✕</button>
       `;
 
-      // remove button event
-      div.querySelector("button").addEventListener("click", () => {
-        removeFromCart(id);
-      });
-
-      cartItemsContainer.appendChild(div);
+      // Remove item on click
+      div
+        .querySelector("button")
+        .addEventListener("click", () => removeFromCart(id));
+      cartContainer.appendChild(div);
     });
   }
 
-  // Update total
-  document.querySelector(
-    ".total"
-  ).innerText = "$" + total;
+  document.querySelector(".total").innerText = "$" + total;
 }
 
-// Load Plants
+// Fetch and Render All Plants
 function loadAllPlants() {
-    showSpinner();
-  fetch(all_plant_api)
+  showSpinner();
+  fetch(PLANTS_API)
     .then((res) => res.json())
     .then((data) => renderPlants(data.plants));
 }
 
-function loadPlantsByCategory(id) {
-    showSpinner();
-  fetch(`https://openapi.programming-hero.com/api/category/${id}`)
+// Fetch and Render Plants by Category
+function loadPlantsByCategory(categoryId) {
+  showSpinner();
+  fetch(`https://openapi.programming-hero.com/api/category/${categoryId}`)
     .then((res) => res.json())
     .then((data) => renderPlants(data.plants));
 }
 
-// Load Categories
-fetch(category_api)
+// Fetch and Render Categories
+fetch(CATEGORY_API)
   .then((res) => res.json())
   .then((data) => {
-    data.categories.forEach((cat) => {
-      let item = document.createElement("li");
-      item.className =
-        "cursor-pointer py-2 px-4 rounded-lg hover:bg-green-100 text-[#1F2937]";
-      item.innerText = cat.category_name;
-
-      item.addEventListener("click", () => {
-        Array.from(categoryContainer.children).forEach((child) =>
-          child.classList.remove("bg-green-600", "text-white")
-        );
-
-        item.classList.add("bg-green-600", "text-white");
-        loadPlantsByCategory(cat.id);
-      });
-
-      categoryContainer.appendChild(item);
-    });
-
-    // All Plants option
-    let allItem = document.createElement("li");
+    // Add "All Plants" option first
+    const allItem = document.createElement("li");
     allItem.className =
       "cursor-pointer py-2 px-4 rounded-lg hover:bg-green-100 text-[#1F2937]";
-    allItem.innerText = "All Plants";
+    allItem.textContent = "All Plants";
     allItem.addEventListener("click", () => {
-      Array.from(categoryContainer.children).forEach((child) =>
-        child.classList.remove("bg-green-600", "text-white")
+      Array.from(categoryList.children).forEach((li) =>
+        li.classList.remove("bg-green-600", "text-white")
       );
       allItem.classList.add("bg-green-600", "text-white");
       loadAllPlants();
     });
-    categoryContainer.prepend(allItem);
+    categoryList.appendChild(allItem);
+
+    // Render categories from API
+    data.categories.forEach((cat) => {
+      const li = document.createElement("li");
+      li.className =
+        "cursor-pointer py-2 px-4 rounded-lg hover:bg-green-100 text-[#1F2937]";
+      li.textContent = cat.category_name;
+
+      li.addEventListener("click", () => {
+        Array.from(categoryList.children).forEach((li) =>
+          li.classList.remove("bg-green-600", "text-white")
+        );
+        li.classList.add("bg-green-600", "text-white");
+        loadPlantsByCategory(cat.id);
+      });
+
+      categoryList.appendChild(li);
+    });
   });
 
+// Load everything on first visit
 loadAllPlants();
